@@ -661,6 +661,26 @@
   }
   body.edit-mode .sticker:hover .sticker-label{ display:block; }
 
+  /* ---- 흩날리는 꽃가루 ---- */
+  #petal-layer{
+    position:fixed; inset:0; z-index:30; pointer-events:none; overflow:hidden;
+  }
+  #petal-layer .petal{
+    position:absolute;
+    top:-4%;
+    border-radius:50%;
+    background:var(--rose);
+    animation:petal-fall linear infinite;
+  }
+  @keyframes petal-fall{
+    0%{ transform:translate(0,0) rotate(0deg); }
+    25%{ transform:translate(8px,25vh) rotate(90deg); }
+    50%{ transform:translate(-8px,55vh) rotate(180deg); }
+    75%{ transform:translate(8px,80vh) rotate(270deg); }
+    100%{ transform:translate(0,112vh) rotate(360deg); }
+  }
+  @media print{ #petal-layer{ display:none !important; } }
+
   /* 편집 툴바 */
   #edit-toolbar{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
@@ -1394,6 +1414,7 @@
 
 </div>
 
+<div id="petal-layer"></div>
 <div id="edit-toolbar">
   <button type="button" class="mode-btn" id="btn-toggle-mode">편집 중</button>
   <div class="divider"></div>
@@ -1402,6 +1423,28 @@
 </div>
 <div id="edit-toast"></div>
 <input type="file" id="hidden-file-input" accept="image/*" style="display:none">
+
+<!-- 흩날리는 꽃가루 -->
+<script id="petal-script">
+(function(){
+  const layer = document.getElementById('petal-layer');
+  const count = 26;
+  for (let i = 0; i < count; i++){
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    const size = 2 + Math.random() * 3;
+    const duration = 10 + Math.random() * 10;
+    const delay = -Math.random() * duration;
+    petal.style.left = (Math.random() * 100) + '%';
+    petal.style.width = size + 'px';
+    petal.style.height = size + 'px';
+    petal.style.opacity = 0.25 + Math.random() * 0.35;
+    petal.style.animationDuration = duration + 's';
+    petal.style.animationDelay = delay + 's';
+    layer.appendChild(petal);
+  }
+})();
+</script>
 
 <!-- 타임라인 스크롤 리빌 : 사진/글이 화면에 들어올 때 하나씩 나타남 -->
 <script id="reveal-script">
