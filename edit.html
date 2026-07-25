@@ -241,6 +241,7 @@
     color:var(--ink-soft);
     padding:12px 0 6px;
   }
+  .cal-week span:first-child{ color:#C0392B; }
   .cal-days{
     display:grid;
     grid-template-columns:repeat(7,1fr);
@@ -250,6 +251,7 @@
     color:var(--ink);
     padding-bottom:10px;
   }
+  .cal-days span:nth-child(7n+1){ color:#C0392B; }
   .cal-days span.marked{
     position:relative;
     color:var(--white);
@@ -258,7 +260,11 @@
   .cal-days span.marked::before{
     content:'';
     position:absolute;
-    inset:-8px -8px;
+    top:50%;
+    left:50%;
+    width:32px;
+    height:32px;
+    transform:translate(-50%,-50%);
     background:var(--rose);
     border-radius:50%;
     z-index:-1;
@@ -1104,6 +1110,38 @@
       <button type="button" class="sticker-handle sticker-remove">×</button>
       <div class="sticker-label">리버풀</div>
     </div>
+    <div class="sticker has-image" data-sticker-key="records" data-label="좋아하는 음반" style="left:8%; top:24%; width:20%; transform:rotate(-4deg);">
+      <img src="stickers/records.png" alt="좋아하는 음반">
+      <div class="sticker-frame"></div>
+      <div class="sticker-handle sticker-rotate"></div>
+      <div class="sticker-handle sticker-resize"></div>
+      <button type="button" class="sticker-handle sticker-remove">×</button>
+      <div class="sticker-label">좋아하는 음반</div>
+    </div>
+    <div class="sticker has-image" data-sticker-key="chicken" data-label="치킨" style="left:82%; top:40%; width:12%; transform:rotate(6deg);">
+      <img src="stickers/chicken.png" alt="치킨">
+      <div class="sticker-frame"></div>
+      <div class="sticker-handle sticker-rotate"></div>
+      <div class="sticker-handle sticker-resize"></div>
+      <button type="button" class="sticker-handle sticker-remove">×</button>
+      <div class="sticker-label">치킨</div>
+    </div>
+    <div class="sticker has-image" data-sticker-key="cola" data-label="콜라" style="left:6%; top:57%; width:9%; transform:rotate(-6deg);">
+      <img src="stickers/cola.png" alt="콜라">
+      <div class="sticker-frame"></div>
+      <div class="sticker-handle sticker-rotate"></div>
+      <div class="sticker-handle sticker-resize"></div>
+      <button type="button" class="sticker-handle sticker-remove">×</button>
+      <div class="sticker-label">콜라</div>
+    </div>
+    <div class="sticker has-image" data-sticker-key="headphones" data-label="헤드폰" style="left:84%; top:74%; width:11%; transform:rotate(5deg);">
+      <img src="stickers/headphones.png" alt="헤드폰">
+      <div class="sticker-frame"></div>
+      <div class="sticker-handle sticker-rotate"></div>
+      <div class="sticker-handle sticker-resize"></div>
+      <button type="button" class="sticker-handle sticker-remove">×</button>
+      <div class="sticker-label">헤드폰</div>
+    </div>
   </div>
 
 </div>
@@ -1163,6 +1201,12 @@ function copyAccount(btn){
     toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
   }
 
+  let saveToastTimer = null;
+  function scheduleSaveToast(){
+    clearTimeout(saveToastTimer);
+    saveToastTimer = setTimeout(() => showToast('저장되었습니다'), 700);
+  }
+
   function updateTitle(){
     const groom = document.querySelector('[data-key="groom-name"]');
     const bride = document.querySelector('[data-key="bride-name"]');
@@ -1191,6 +1235,7 @@ function copyAccount(btn){
         });
         updateTitle();
         persist();
+        scheduleSaveToast();
       });
     });
   }
