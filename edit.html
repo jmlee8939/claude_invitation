@@ -661,25 +661,26 @@
   }
   body.edit-mode .sticker:hover .sticker-label{ display:block; }
 
-  /* ---- 흩날리는 꽃가루 ---- */
-  #petal-layer{
+  /* ---- 내리는 눈 ---- */
+  #snow-layer{
     position:fixed; inset:0; z-index:30; pointer-events:none; overflow:hidden;
   }
-  #petal-layer .petal{
+  #snow-layer .snow{
     position:absolute;
     top:-4%;
     border-radius:50%;
-    background:var(--rose);
-    animation:petal-fall linear infinite;
+    background:#fff;
+    box-shadow:0 0 3px rgba(58,51,36,.25);
+    animation:snow-fall linear infinite;
   }
-  @keyframes petal-fall{
+  @keyframes snow-fall{
     0%{ transform:translate(0,0) rotate(0deg); }
     25%{ transform:translate(8px,25vh) rotate(90deg); }
     50%{ transform:translate(-8px,55vh) rotate(180deg); }
     75%{ transform:translate(8px,80vh) rotate(270deg); }
     100%{ transform:translate(0,112vh) rotate(360deg); }
   }
-  @media print{ #petal-layer{ display:none !important; } }
+  @media print{ #snow-layer{ display:none !important; } }
 
   /* 편집 툴바 */
   #edit-toolbar{
@@ -1414,7 +1415,7 @@
 
 </div>
 
-<div id="petal-layer"></div>
+<div id="snow-layer"></div>
 <div id="edit-toolbar">
   <button type="button" class="mode-btn" id="btn-toggle-mode">편집 중</button>
   <div class="divider"></div>
@@ -1424,24 +1425,24 @@
 <div id="edit-toast"></div>
 <input type="file" id="hidden-file-input" accept="image/*" style="display:none">
 
-<!-- 흩날리는 꽃가루 -->
-<script id="petal-script">
+<!-- 내리는 눈 -->
+<script id="snow-script">
 (function(){
-  const layer = document.getElementById('petal-layer');
+  const layer = document.getElementById('snow-layer');
   const count = 26;
   for (let i = 0; i < count; i++){
-    const petal = document.createElement('div');
-    petal.className = 'petal';
-    const size = 2 + Math.random() * 3;
+    const snow = document.createElement('div');
+    snow.className = 'snow';
+    const size = 5 + Math.random() * 6;
     const duration = 10 + Math.random() * 10;
     const delay = -Math.random() * duration;
-    petal.style.left = (Math.random() * 100) + '%';
-    petal.style.width = size + 'px';
-    petal.style.height = size + 'px';
-    petal.style.opacity = 0.25 + Math.random() * 0.35;
-    petal.style.animationDuration = duration + 's';
-    petal.style.animationDelay = delay + 's';
-    layer.appendChild(petal);
+    snow.style.left = (Math.random() * 100) + '%';
+    snow.style.width = size + 'px';
+    snow.style.height = size + 'px';
+    snow.style.opacity = 0.35 + Math.random() * 0.4;
+    snow.style.animationDuration = duration + 's';
+    snow.style.animationDelay = delay + 's';
+    layer.appendChild(snow);
   }
 })();
 </script>
