@@ -312,6 +312,33 @@
     text-underline-offset:4px;
   }
 
+  /* ================= 4-1. 우리의 모습 (스티커 꾸미기 공간) ================= */
+  .our-look-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+    margin-top:28px;
+  }
+  .our-look-col{ text-align:center; }
+  .our-look-name{
+    font-family:var(--font-display);
+    font-size:20px;
+    color:var(--forest);
+    margin-bottom:12px;
+  }
+  .our-look-grid .photo-slot{
+    aspect-ratio:1/1;
+    border:1px dashed var(--line);
+    background:var(--ivory-deep);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-align:center;
+    padding:6px;
+  }
+
   /* ================= 5. 오시는 길 ================= */
   .venue-name{ text-align:center; font-size:20px; }
   .venue-addr{
@@ -842,6 +869,30 @@
       <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#B5754A"/>
       <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#B5754A"/>
       <path d="M110 12 C110 8 114 6 117 9 C114 9 111 10 110 12Z" fill="#B5754A"/>
+    </svg>
+  </div>
+
+  <!-- ================= 4-1. 우리의 모습 (스티커를 자유롭게 붙일 수 있는 공간) ================= -->
+  <section id="our-look">
+    <div class="eyebrow">Our Story</div>
+    <h2 class="section-title">우리의 모습</h2>
+    <div class="our-look-grid">
+      <div class="our-look-col">
+        <div class="our-look-name editable" data-key="groom-name">신랑 이름</div>
+        <div class="photo-slot" data-photo-key="our-look-groom"><span class="slot-label">사진을 넣거나<br>스티커를 붙여보세요</span></div>
+      </div>
+      <div class="our-look-col">
+        <div class="our-look-name editable" data-key="bride-name">신부 이름</div>
+        <div class="photo-slot" data-photo-key="our-look-bride"><span class="slot-label">사진을 넣거나<br>스티커를 붙여보세요</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="branch-divider">
+    <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
+      <path d="M2 12 H118" stroke="#5C5236" stroke-width="1"/>
+      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#B5754A"/>
+      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#B5754A"/>
     </svg>
   </div>
 
