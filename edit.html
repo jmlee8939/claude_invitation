@@ -680,6 +680,17 @@
     box-shadow:0 0 3px rgba(58,51,36,.25);
     animation:snow-fall linear infinite;
   }
+  #snow-layer .snow-icon{
+    position:absolute;
+    top:-8%;
+    animation:snow-fall linear infinite;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
+  }
+  #snow-layer .snow-icon img{
+    display:block;
+    width:100%;
+    height:auto;
+  }
   @keyframes snow-fall{
     0%{ transform:translate(0,0) rotate(0deg); }
     25%{ transform:translate(8px,25vh) rotate(90deg); }
@@ -1133,13 +1144,32 @@
 (function(){
   const layer = document.getElementById('snow-layer');
   const count = 26;
+  const icons = ['stickers/kendo-mask.png', 'stickers/chicken.png', 'stickers/flag-big.png'];
   for (let i = 0; i < count; i++){
+    const duration = 10 + Math.random() * 10;
+    const delay = -Math.random() * duration;
+    const left = Math.random() * 100;
+
+    if (Math.random() < 0.12){
+      const wrap = document.createElement('div');
+      wrap.className = 'snow-icon';
+      const size = 26 + Math.random() * 14;
+      wrap.style.left = left + '%';
+      wrap.style.width = size + 'px';
+      wrap.style.opacity = 0.7 + Math.random() * 0.3;
+      wrap.style.animationDuration = duration + 's';
+      wrap.style.animationDelay = delay + 's';
+      const img = document.createElement('img');
+      img.src = icons[Math.floor(Math.random() * icons.length)];
+      wrap.appendChild(img);
+      layer.appendChild(wrap);
+      continue;
+    }
+
     const snow = document.createElement('div');
     snow.className = 'snow';
     const size = 5 + Math.random() * 6;
-    const duration = 10 + Math.random() * 10;
-    const delay = -Math.random() * duration;
-    snow.style.left = (Math.random() * 100) + '%';
+    snow.style.left = left + '%';
     snow.style.width = size + 'px';
     snow.style.height = size + 'px';
     snow.style.opacity = 0.35 + Math.random() * 0.4;
