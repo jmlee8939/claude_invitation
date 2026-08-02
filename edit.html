@@ -668,35 +668,28 @@
   }
   body.edit-mode .sticker:hover .sticker-label{ display:block; }
 
-  /* ---- 내리는 눈 ---- */
+  /* ---- 내리는 눈 (JS로 직접 위치 제어) ---- */
   #snow-layer{
     position:fixed; inset:0; z-index:30; pointer-events:none; overflow:hidden;
   }
   #snow-layer .snow{
     position:absolute;
-    top:-4%;
+    top:0;
     border-radius:50%;
     background:#fff;
     box-shadow:0 0 3px rgba(58,51,36,.25);
-    animation:snow-fall linear infinite;
+    will-change:transform;
   }
   #snow-layer .snow-icon{
     position:absolute;
-    top:-8%;
-    animation:snow-fall linear infinite;
+    top:0;
     filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
+    will-change:transform;
   }
   #snow-layer .snow-icon img{
     display:block;
     width:100%;
     height:auto;
-  }
-  @keyframes snow-fall{
-    0%{ transform:translate(0,0) rotate(0deg); }
-    25%{ transform:translate(8px,25vh) rotate(90deg); }
-    50%{ transform:translate(-8px,55vh) rotate(180deg); }
-    75%{ transform:translate(8px,80vh) rotate(270deg); }
-    100%{ transform:translate(0,112vh) rotate(360deg); }
   }
   @media print{ #snow-layer{ display:none !important; } }
 
@@ -1139,54 +1132,78 @@
 <div id="edit-toast"></div>
 <input type="file" id="hidden-file-input" accept="image/*" style="display:none">
 
-<!-- 내리는 눈 -->
+<!-- 내리는 눈 (requestAnimationFrame으로 직접 위치 제어: 항상 화면 위에서 시작) -->
 <script id="snow-script">
 (function(){
   const layer = document.getElementById('snow-layer');
   const count = 26;
   const icons = ['stickers/kendo-mask.png', 'stickers/chicken.png', 'stickers/flag-big.png'];
+  const flakes = [];
 
-  function randomizePosition(el){
-    el.style.left = (Math.random() * 100) + '%';
+  function spawn(el, isIcon, startAboveTop){
+    const speed = 20 + Math.random() * 20; // px/sec
+    const drift = (Math.random() - 0.5) * 12; // px/sec 좌우
+    const h = layer.clientHeight || window.innerHeight;
+    const startY = startAboveTop ? -(40 + Math.random() * h) : -(20 + Math.random() * 60);
+    return {
+      el,
+      x: Math.random() * 100,
+      y: startY,
+      speed,
+      drift,
+      isIcon
+    };
   }
 
   for (let i = 0; i < count; i++){
-    const duration = 10 + Math.random() * 10;
-    const delay = Math.random() * 15;
-    const left = Math.random() * 100;
-
-    if (Math.random() < 0.06){
+    const isIcon = Math.random() < 0.06;
+    let el;
+    if (isIcon){
       const wrap = document.createElement('div');
       wrap.className = 'snow-icon';
       const size = 26 + Math.random() * 14;
-      wrap.style.left = left + '%';
       wrap.style.width = size + 'px';
       wrap.style.opacity = 0.7 + Math.random() * 0.3;
-      wrap.style.animationDuration = duration + 's';
-      wrap.style.animationDelay = delay + 's';
       const img = document.createElement('img');
       img.src = icons[Math.floor(Math.random() * icons.length)];
       wrap.appendChild(img);
-      wrap.addEventListener('animationiteration', () => {
-        img.src = icons[Math.floor(Math.random() * icons.length)];
-        randomizePosition(wrap);
-      });
-      layer.appendChild(wrap);
-      continue;
+      el = wrap;
+    } else {
+      const snow = document.createElement('div');
+      snow.className = 'snow';
+      const size = 5 + Math.random() * 6;
+      snow.style.width = size + 'px';
+      snow.style.height = size + 'px';
+      snow.style.opacity = 0.35 + Math.random() * 0.4;
+      el = snow;
     }
-
-    const snow = document.createElement('div');
-    snow.className = 'snow';
-    const size = 5 + Math.random() * 6;
-    snow.style.left = left + '%';
-    snow.style.width = size + 'px';
-    snow.style.height = size + 'px';
-    snow.style.opacity = 0.35 + Math.random() * 0.4;
-    snow.style.animationDuration = duration + 's';
-    snow.style.animationDelay = delay + 's';
-    snow.addEventListener('animationiteration', () => randomizePosition(snow));
-    layer.appendChild(snow);
+    layer.appendChild(el);
+    flakes.push(spawn(el, isIcon, true));
   }
+
+  let lastT = null;
+  function tick(t){
+    if (lastT === null) lastT = t;
+    const dt = Math.min((t - lastT) / 1000, 0.05);
+    lastT = t;
+    const h = layer.clientHeight || window.innerHeight;
+    const w = layer.clientWidth || window.innerWidth;
+
+    flakes.forEach(f => {
+      f.y += f.speed * dt;
+      f.x += (f.drift * dt / w) * 100;
+      if (f.x < -5) f.x = 105;
+      if (f.x > 105) f.x = -5;
+      if (f.y > h + 40){
+        f.y = -(20 + Math.random() * 60);
+        f.x = Math.random() * 100;
+      }
+      f.el.style.transform = `translate(${f.x}vw, ${f.y}px)`;
+    });
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 })();
 </script>
 
