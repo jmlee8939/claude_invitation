@@ -1144,7 +1144,13 @@
 (function(){
   const layer = document.getElementById('snow-layer');
   const count = 26;
-  const icons = ['stickers/kendo-mask.png', 'stickers/chicken.png', 'stickers/flag-big.png'];
+  const icons = ['stickers/kendo-mask.png', 'stickers/kendo-vest.png', 'stickers/chicken.png', 'stickers/flag-big.png'];
+
+  function randomizePosition(el){
+    el.style.left = (Math.random() * 100) + '%';
+    el.style.animationDuration = (10 + Math.random() * 10) + 's';
+  }
+
   for (let i = 0; i < count; i++){
     const duration = 10 + Math.random() * 10;
     const delay = -Math.random() * duration;
@@ -1162,6 +1168,10 @@
       const img = document.createElement('img');
       img.src = icons[Math.floor(Math.random() * icons.length)];
       wrap.appendChild(img);
+      wrap.addEventListener('animationiteration', () => {
+        img.src = icons[Math.floor(Math.random() * icons.length)];
+        randomizePosition(wrap);
+      });
       layer.appendChild(wrap);
       continue;
     }
@@ -1175,6 +1185,7 @@
     snow.style.opacity = 0.35 + Math.random() * 0.4;
     snow.style.animationDuration = duration + 's';
     snow.style.animationDelay = delay + 's';
+    snow.addEventListener('animationiteration', () => randomizePosition(snow));
     layer.appendChild(snow);
   }
 })();
