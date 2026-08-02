@@ -95,8 +95,19 @@
     display:flex;
     justify-content:center;
     padding:36px 0 0;
+    position:relative;
   }
   .branch-divider svg{ opacity:.55; }
+  .branch-divider .divider-sticker{
+    position:absolute;
+    top:36px;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:28px;
+    height:28px;
+    object-fit:contain;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.18));
+  }
 
   .eyebrow{
     font-family:var(--font-en);
@@ -680,17 +691,6 @@
     box-shadow:0 0 3px rgba(58,51,36,.25);
     will-change:transform;
   }
-  #snow-layer .snow-icon{
-    position:absolute;
-    top:0;
-    filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    will-change:transform;
-  }
-  #snow-layer .snow-icon img{
-    display:block;
-    width:100%;
-    height:auto;
-  }
   @media print{ #snow-layer{ display:none !important; } }
 
   /* 편집 툴바 */
@@ -744,10 +744,11 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/kendo-mask.png" alt="검도 호구">
     <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
-      <path d="M2 12 H118" stroke="#5C5236" stroke-width="1"/>
-      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#B5754A"/>
-      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#B5754A"/>
+      <path d="M2 12 H118" stroke="#4C6478" stroke-width="1"/>
+      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#5A80A3"/>
+      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -782,11 +783,12 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/chicken.png" alt="치킨">
     <svg width="150" height="24" viewBox="0 0 150 24" fill="none">
-      <path d="M2 12 H148" stroke="#5C5236" stroke-width="1"/>
-      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#B5754A"/>
-      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#B5754A"/>
-      <path d="M40 12 C40 8 44 6 47 9 C44 9 41 10 40 12Z" fill="#B5754A"/>
+      <path d="M2 12 H148" stroke="#4C6478" stroke-width="1"/>
+      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#5A80A3"/>
+      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#5A80A3"/>
+      <path d="M40 12 C40 8 44 6 47 9 C44 9 41 10 40 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -814,10 +816,11 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/flag-big.png" alt="리버풀 엠블럼">
     <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
-      <path d="M2 12 H118" stroke="#5C5236" stroke-width="1"/>
-      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#B5754A"/>
-      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#B5754A"/>
+      <path d="M2 12 H118" stroke="#4C6478" stroke-width="1"/>
+      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#5A80A3"/>
+      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -841,11 +844,12 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/skincare-foam-pink.png" alt="폼클렌징">
     <svg width="150" height="24" viewBox="0 0 150 24" fill="none">
-      <path d="M2 12 H148" stroke="#5C5236" stroke-width="1"/>
-      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#B5754A"/>
-      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#B5754A"/>
-      <path d="M110 12 C110 8 114 6 117 9 C114 9 111 10 110 12Z" fill="#B5754A"/>
+      <path d="M2 12 H148" stroke="#4C6478" stroke-width="1"/>
+      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#5A80A3"/>
+      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#5A80A3"/>
+      <path d="M110 12 C110 8 114 6 117 9 C114 9 111 10 110 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -961,10 +965,11 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/kendo-mask.png" alt="검도 호구">
     <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
-      <path d="M2 12 H118" stroke="#5C5236" stroke-width="1"/>
-      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#B5754A"/>
-      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#B5754A"/>
+      <path d="M2 12 H118" stroke="#4C6478" stroke-width="1"/>
+      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#5A80A3"/>
+      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -1021,10 +1026,11 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/chicken.png" alt="치킨">
     <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
-      <path d="M2 12 H118" stroke="#5C5236" stroke-width="1"/>
-      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#B5754A"/>
-      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#B5754A"/>
+      <path d="M2 12 H118" stroke="#4C6478" stroke-width="1"/>
+      <path d="M60 12 C60 6 66 4 70 8 C66 8 62 10 60 12Z" fill="#5A80A3"/>
+      <path d="M60 12 C60 18 54 20 50 16 C54 16 58 14 60 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -1041,10 +1047,11 @@
   </section>
 
   <div class="branch-divider">
+    <img class="divider-sticker" src="stickers/flag-big.png" alt="리버풀 엠블럼">
     <svg width="150" height="24" viewBox="0 0 150 24" fill="none">
-      <path d="M2 12 H148" stroke="#5C5236" stroke-width="1"/>
-      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#B5754A"/>
-      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#B5754A"/>
+      <path d="M2 12 H148" stroke="#4C6478" stroke-width="1"/>
+      <path d="M75 12 C75 6 81 4 85 8 C81 8 77 10 75 12Z" fill="#5A80A3"/>
+      <path d="M75 12 C75 18 69 20 65 16 C69 16 73 14 75 12Z" fill="#5A80A3"/>
     </svg>
   </div>
 
@@ -1137,11 +1144,10 @@
 (function(){
   const layer = document.getElementById('snow-layer');
   const count = 26;
-  const icons = ['stickers/kendo-mask.png'];
   const flakes = [];
 
-  function spawn(el, isIcon, startAboveTop){
-    const speed = 20 + Math.random() * 20; // px/sec
+  function spawn(el, startAboveTop){
+    const speed = 24 + Math.random() * 24; // px/sec (20% faster)
     const drift = (Math.random() - 0.5) * 12; // px/sec 좌우
     const h = layer.clientHeight || window.innerHeight;
     const startY = startAboveTop ? -(40 + Math.random() * h) : -(20 + Math.random() * 60);
@@ -1150,35 +1156,19 @@
       x: Math.random() * 100,
       y: startY,
       speed,
-      drift,
-      isIcon
+      drift
     };
   }
 
   for (let i = 0; i < count; i++){
-    const isIcon = Math.random() < 0.06;
-    let el;
-    if (isIcon){
-      const wrap = document.createElement('div');
-      wrap.className = 'snow-icon';
-      const size = 26 + Math.random() * 14;
-      wrap.style.width = size + 'px';
-      wrap.style.opacity = 0.7 + Math.random() * 0.3;
-      const img = document.createElement('img');
-      img.src = icons[Math.floor(Math.random() * icons.length)];
-      wrap.appendChild(img);
-      el = wrap;
-    } else {
-      const snow = document.createElement('div');
-      snow.className = 'snow';
-      const size = 5 + Math.random() * 6;
-      snow.style.width = size + 'px';
-      snow.style.height = size + 'px';
-      snow.style.opacity = 0.35 + Math.random() * 0.4;
-      el = snow;
-    }
-    layer.appendChild(el);
-    flakes.push(spawn(el, isIcon, true));
+    const snow = document.createElement('div');
+    snow.className = 'snow';
+    const size = 5 + Math.random() * 6;
+    snow.style.width = size + 'px';
+    snow.style.height = size + 'px';
+    snow.style.opacity = 0.35 + Math.random() * 0.4;
+    layer.appendChild(snow);
+    flakes.push(spawn(snow, true));
   }
 
   let lastT = null;
