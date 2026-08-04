@@ -367,12 +367,6 @@
     border-radius:6px;
     background:var(--ivory-deep);
   }
-  .map-embed .root_daum_roughmap{
-    position:absolute;
-    top:0;
-    left:0;
-    transform-origin:0 0;
-  }
   .map-buttons{
     display:flex;
     gap:8px;
@@ -1000,27 +994,42 @@
     <div class="venue-addr editable" data-key="venue-addr">서울특별시 00구 00로 00길 00</div>
 
     <div class="map-embed">
-      <div id="daumRoughmapContainer1784944392190" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+      <div id="kakao-map" style="width:100%; height:100%;"></div>
     </div>
-    <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script>
-    <script charset="UTF-8">
-      new daum.roughmap.Lander({
-        "timestamp" : "1784944392190",
-        "key" : "rriv7x43aj8",
-        "mapWidth" : "640",
-        "mapHeight" : "360"
-      }).render();
-      (function(){
-        var wrap = document.currentScript.previousElementSibling.previousElementSibling;
-        function fit(){
-          var inner = wrap.querySelector('.root_daum_roughmap');
-          if (!inner || !inner.firstChild){ requestAnimationFrame(fit); return; }
-          var scale = wrap.clientWidth / 640;
-          inner.style.transform = 'scale(' + scale + ')';
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a3467de6dd14b5ed9184d1f3be7c2078&libraries=services"></script>
+    <script id="kakao-map-script">
+    (function(){
+      const container = document.getElementById('kakao-map');
+      const addrEl = document.querySelector('[data-key="venue-addr"]');
+      if (!container || !addrEl || typeof kakao === 'undefined') return;
+
+      let map, marker;
+
+      function renderMap(lat, lng){
+        const center = new kakao.maps.LatLng(lat, lng);
+        if (!map){
+          map = new kakao.maps.Map(container, { center: center, level: 3 });
+          marker = new kakao.maps.Marker({ position: center, map: map });
+        } else {
+          map.setCenter(center);
+          marker.setPosition(center);
         }
-        fit();
-        window.addEventListener('resize', fit);
-      })();
+      }
+
+      function geocodeAndRender(){
+        const address = addrEl.textContent.trim();
+        if (!address) return;
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.addressSearch(address, (result, status) => {
+          if (status === kakao.maps.services.Status.OK && result[0]){
+            renderMap(result[0].y, result[0].x);
+          }
+        });
+      }
+
+      geocodeAndRender();
+      addrEl.addEventListener('blur', geocodeAndRender);
+    })();
     </script>
 
     <div class="map-buttons">
