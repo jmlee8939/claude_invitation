@@ -1004,7 +1004,18 @@
       const addrEl = document.querySelector('[data-key="venue-addr"]');
       if (!container || !addrEl || typeof kakao === 'undefined') return;
 
-      kakao.maps.load(function(){
+      function whenServicesReady(cb, tries){
+        tries = tries || 0;
+        const ready = kakao.maps && kakao.maps.services && kakao.maps.services.Geocoder;
+        if (ready){ cb(); return; }
+        if (tries > 100){
+          console.error('kakao.maps.services 로딩 실패 (appkey/도메인/services 라이브러리 확인 필요)');
+          return;
+        }
+        setTimeout(() => whenServicesReady(cb, tries + 1), 100);
+      }
+
+      function start(){
         let map, marker;
 
         function renderMap(lat, lng){
@@ -1025,13 +1036,21 @@
           geocoder.addressSearch(address, (result, status) => {
             if (status === kakao.maps.services.Status.OK && result[0]){
               renderMap(result[0].y, result[0].x);
+            } else {
+              console.error('카카오맵 주소 검색 실패:', address, status);
             }
           });
         }
 
         geocodeAndRender();
         addrEl.addEventListener('blur', geocodeAndRender);
-      });
+      }
+
+      if (typeof kakao.maps.load === 'function'){
+        kakao.maps.load(() => whenServicesReady(start));
+      } else {
+        whenServicesReady(start);
+      }
     })();
     </script>
 
