@@ -825,7 +825,7 @@
           <span>31</span><span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
       </div>
-      <div class="countdown editable" data-key="cal-countdown">결혼식까지 D-169</div>
+      <div class="countdown" id="cal-countdown">결혼식까지 D-169</div>
     </div>
   </section>
 
@@ -1235,6 +1235,34 @@
     });
   }, { threshold: 0.25 });
   items.forEach(item => io.observe(item));
+</script>
+
+<!-- 결혼식 D-day 자동 계산 (완성본에도 남는 독립 스크립트, 편집 중 날짜를 바꾸면 즉시 갱신) -->
+<script id="countdown-script">
+(function(){
+  const ymEl = document.querySelector('[data-key="cal-yearmonth"]');
+  const dayEl = document.querySelector('[data-key="cal-day"]');
+  const countdownEl = document.getElementById('cal-countdown');
+  if (!ymEl || !dayEl || !countdownEl) return;
+
+  function update(){
+    const ym = ymEl.textContent.match(/(\d+)\s*년\s*(\d+)\s*월/);
+    const day = parseInt(dayEl.textContent, 10);
+    if (!ym || isNaN(day)) return;
+    const wedding = new Date(parseInt(ym[1], 10), parseInt(ym[2], 10) - 1, day);
+    const today = new Date();
+    wedding.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diff = Math.round((wedding - today) / 86400000);
+    countdownEl.textContent = diff > 0 ? `결혼식까지 D-${diff}`
+      : diff === 0 ? '오늘이 바로 결혼식 날입니다 D-DAY'
+      : `결혼식을 마친지 D+${-diff}일 되었습니다`;
+  }
+
+  update();
+  ymEl.addEventListener('input', update);
+  dayEl.addEventListener('input', update);
+})();
 </script>
 
 <!-- ================= 편집 프로그램 (사진 드래그앤드롭 + 문구 직접 입력 + 완성본 내보내기) ================= -->
