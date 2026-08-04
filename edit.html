@@ -1344,6 +1344,21 @@ function copyAccount(btn){
 
   function wireTextEditing(){
     document.querySelectorAll('[data-key]').forEach(el => {
+      /* Enter 키를 누르면 <div>/<p>가 아니라 항상 <br>만 삽입되도록 강제.
+         <p> 안에 <div>가 들어가면 브라우저가 그 지점에서 <p>를 자동으로 끊어버려
+         스타일(정렬/색상)이 깨지는 문제가 있었음. */
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          document.execCommand('insertHTML', false, '<br>');
+        }
+      });
+      /* 붙여넣기 시 서식(색상 등)이 함께 들어오는 것을 막고 일반 텍스트만 삽입 */
+      el.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
       el.addEventListener('input', () => {
         const key = el.dataset.key;
         state.texts[key] = el.innerHTML;
