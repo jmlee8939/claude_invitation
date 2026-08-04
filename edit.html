@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>신랑 이름 ♥ 신부 이름 결혼합니다</title>
 
+<meta property="og:type" content="website">
+<meta property="og:title" content="신랑 이름 ♥ 신부 이름 결혼합니다">
+<meta property="og:description" content="2027년 1월 10일 일요일 낮 12시 30분 · 예식장 이름 00층 00홀">
+<meta property="og:image" content="https://jmlee8939.github.io/claude_invitation/og-image.jpg">
+<meta property="og:url" content="https://jmlee8939.github.io/claude_invitation/edit.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="신랑 이름 ♥ 신부 이름 결혼합니다">
+<meta name="twitter:description" content="2027년 1월 10일 일요일 낮 12시 30분 · 예식장 이름 00층 00홀">
+<meta name="twitter:image" content="https://jmlee8939.github.io/claude_invitation/og-image.jpg">
+
 <!-- ============================================================
   이 파일은 브라우저에서 바로 편집 가능한 청첩장입니다.
   파일을 열면 화면 하단에 편집 툴바가 뜹니다.
@@ -1331,7 +1341,17 @@ function copyAccount(btn){
     const groom = document.querySelector('[data-key="groom-name"]');
     const bride = document.querySelector('[data-key="bride-name"]');
     if (groom && bride){
-      document.title = `${groom.textContent.trim()} ♥ ${bride.textContent.trim()} 결혼합니다`;
+      const t = `${groom.textContent.trim()} ♥ ${bride.textContent.trim()} 결혼합니다`;
+      document.title = t;
+      document.querySelector('meta[property="og:title"]')?.setAttribute('content', t);
+      document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', t);
+    }
+    const dateEl = document.querySelector('[data-key="wedding-datetime"]');
+    const venueEl = document.querySelector('[data-key="venue-name"]');
+    if (dateEl && venueEl){
+      const d = `${dateEl.textContent.trim()} · ${venueEl.textContent.trim()}`;
+      document.querySelector('meta[property="og:description"]')?.setAttribute('content', d);
+      document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', d);
     }
   }
 
