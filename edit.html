@@ -724,7 +724,26 @@
   }
   #edit-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-  @media print{ #edit-toolbar, #edit-toast{ display:none !important; } }
+  /* ---- 배경음악 ---- */
+  #bgm-toggle{
+    position:fixed; left:18px; bottom:18px; z-index:1000;
+    width:44px; height:44px; border-radius:50%; border:none;
+    background:rgba(38,55,74,.85); color:#fff; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,.25);
+  }
+  #bgm-toggle.spinning{ animation:bgm-spin 4s linear infinite; }
+  @keyframes bgm-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  #bgm-remove{
+    position:fixed; left:52px; bottom:52px; z-index:1001;
+    width:20px; height:20px; border-radius:50%; border:none;
+    background:var(--rose); color:#fff; font-size:12px; line-height:1;
+    display:none; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,.25);
+  }
+  #bgm-remove.show{ display:flex; }
+
+  @media print{ #edit-toolbar, #edit-toast, #bgm-toggle, #bgm-remove{ display:none !important; } }
 </style>
 </head>
 <body>
@@ -1137,6 +1156,48 @@
 <div id="edit-toast"></div>
 <input type="file" id="hidden-file-input" accept="image/*" style="display:none">
 
+<audio id="bgm-audio" loop preload="none" src="bgm.mp3"></audio>
+<input type="file" id="hidden-audio-input" accept="audio/*" style="display:none">
+<button type="button" id="bgm-toggle" title="배경음악">♪</button>
+<button type="button" id="bgm-remove" title="배경음악 삭제">×</button>
+
+<!-- 배경음악 재생/일시정지 (완성본에도 남는 독립 스크립트) -->
+<script id="bgm-toggle-script">
+(function(){
+  const btn = document.getElementById('bgm-toggle');
+  const audio = document.getElementById('bgm-audio');
+  if (!btn || !audio) return;
+
+  function hasAudio(){ return !!audio.getAttribute('src'); }
+
+  function refresh(){
+    const editMode = document.body.classList.contains('edit-mode');
+    if (!hasAudio() && !editMode){
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = 'flex';
+    btn.textContent = !hasAudio() ? '♪+' : (audio.paused ? '♪' : '❚❚');
+    btn.classList.toggle('spinning', hasAudio() && !audio.paused);
+  }
+
+  btn.addEventListener('click', () => {
+    if (!hasAudio()){
+      if (document.body.classList.contains('edit-mode')){
+        document.getElementById('hidden-audio-input')?.click();
+      }
+      return;
+    }
+    if (audio.paused){ audio.play().catch(() => {}); } else { audio.pause(); }
+  });
+
+  audio.addEventListener('play', refresh);
+  audio.addEventListener('pause', refresh);
+  new MutationObserver(refresh).observe(document.body, { attributes:true, attributeFilter:['class'] });
+  refresh();
+})();
+</script>
+
 <!-- 내리는 눈 (requestAnimationFrame으로 직접 위치 제어: 항상 화면 위에서 시작) -->
 <script id="snow-script">
 (function(){
@@ -1217,7 +1278,7 @@ function copyAccount(btn){
 
 (function(){
   const STORAGE_KEY = 'invitation-editor-v1';
-  let state = { editMode:true, texts:{}, photos:{}, links:{}, stickers:{} };
+  let state = { editMode:true, texts:{}, photos:{}, links:{}, stickers:{}, audio:null };
 
   try{
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -1342,6 +1403,45 @@ function copyAccount(btn){
       if (!slot) return;
       setPhotoVisual(slot, state.photos[key]);
       ensureRemoveButton(slot);
+    });
+  }
+
+  /* ---------- 배경음악 ---------- */
+  function updateBgmRemoveVisibility(){
+    document.getElementById('bgm-remove')?.classList.toggle('show', !!(state.audio && state.audio.src));
+  }
+
+  function applyAudioState(){
+    if (state.audio && state.audio.src){
+      document.getElementById('bgm-audio').src = state.audio.src;
+    }
+    updateBgmRemoveVisibility();
+  }
+
+  function wireBgmUpload(){
+    document.getElementById('hidden-audio-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.audio = { src: reader.result, name: file.name };
+        document.getElementById('bgm-audio').src = reader.result;
+        persist();
+        updateBgmRemoveVisibility();
+        showToast('배경음악이 등록되었습니다');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('bgm-remove').addEventListener('click', () => {
+      state.audio = null;
+      const audioEl = document.getElementById('bgm-audio');
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      persist();
+      updateBgmRemoveVisibility();
+      showToast('배경음악을 삭제했습니다');
     });
   }
 
@@ -1572,6 +1672,8 @@ function copyAccount(btn){
     clone.querySelector('#edit-toolbar')?.remove();
     clone.querySelector('#edit-toast')?.remove();
     clone.querySelector('#hidden-file-input')?.remove();
+    clone.querySelector('#hidden-audio-input')?.remove();
+    clone.querySelector('#bgm-remove')?.remove();
     clone.querySelector('#editor-script')?.remove();
     clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
     clone.querySelectorAll('.photo-slot .photo-hint, .photo-slot .photo-remove').forEach(el => el.remove());
@@ -1609,8 +1711,10 @@ function copyAccount(btn){
   applyLinkState();
   applyPhotoState();
   applyStickerState();
+  applyAudioState();
   wireTextEditing();
   wireLinkEditing();
+  wireBgmUpload();
   document.querySelectorAll('[data-photo-key]').forEach(wirePhotoSlot);
   document.querySelectorAll('.sticker').forEach(wireSticker);
   setEditMode(state.editMode);
