@@ -679,20 +679,6 @@
   }
   body.edit-mode .sticker:hover .sticker-label{ display:block; }
 
-  /* ---- 내리는 눈 (JS로 직접 위치 제어) ---- */
-  #snow-layer{
-    position:fixed; inset:0; z-index:30; pointer-events:none; overflow:hidden;
-  }
-  #snow-layer .snow{
-    position:absolute;
-    top:0;
-    border-radius:50%;
-    background:#fff;
-    box-shadow:0 0 3px rgba(58,51,36,.25);
-    will-change:transform;
-  }
-  @media print{ #snow-layer{ display:none !important; } }
-
   /* 편집 툴바 */
   #edit-toolbar{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
@@ -1116,7 +1102,6 @@
 
 </div>
 
-<div id="snow-layer"></div>
 <div id="edit-toolbar">
   <button type="button" class="mode-btn" id="btn-toggle-mode">편집 중</button>
   <div class="divider"></div>
@@ -1165,64 +1150,19 @@
   audio.addEventListener('pause', refresh);
   new MutationObserver(refresh).observe(document.body, { attributes:true, attributeFilter:['class'] });
   refresh();
-})();
-</script>
 
-<!-- 내리는 눈 (requestAnimationFrame으로 직접 위치 제어: 항상 화면 위에서 시작) -->
-<script id="snow-script">
-(function(){
-  const layer = document.getElementById('snow-layer');
-  const count = 26;
-  const flakes = [];
-
-  function spawn(el, startAboveTop){
-    const speed = 24 + Math.random() * 24; // px/sec (20% faster)
-    const drift = (Math.random() - 0.5) * 12; // px/sec 좌우
-    const h = layer.clientHeight || window.innerHeight;
-    const startY = startAboveTop ? -(40 + Math.random() * h) : -(20 + Math.random() * 60);
-    return {
-      el,
-      x: Math.random() * 100,
-      y: startY,
-      speed,
-      drift
-    };
-  }
-
-  for (let i = 0; i < count; i++){
-    const snow = document.createElement('div');
-    snow.className = 'snow';
-    const size = 5 + Math.random() * 6;
-    snow.style.width = size + 'px';
-    snow.style.height = size + 'px';
-    snow.style.opacity = 0.35 + Math.random() * 0.4;
-    layer.appendChild(snow);
-    flakes.push(spawn(snow, true));
-  }
-
-  let lastT = null;
-  function tick(t){
-    if (lastT === null) lastT = t;
-    const dt = Math.min((t - lastT) / 1000, 0.05);
-    lastT = t;
-    const h = layer.clientHeight || window.innerHeight;
-    const w = layer.clientWidth || window.innerWidth;
-
-    flakes.forEach(f => {
-      f.y += f.speed * dt;
-      f.x += (f.drift * dt / w) * 100;
-      if (f.x < -5) f.x = 105;
-      if (f.x > 105) f.x = -5;
-      if (f.y > h + 40){
-        f.y = -(20 + Math.random() * 60);
-        f.x = Math.random() * 100;
-      }
-      f.el.style.transform = `translate(${f.x}vw, ${f.y}px)`;
+  /* 브라우저가 소리 있는 자동재생을 막기 때문에, 시도해보고 막히면
+     사용자가 페이지에서 처음 탭/스크롤/키 입력하는 순간 재생을 시작함 */
+  if (hasAudio()){
+    audio.play().catch(() => {
+      const startOnFirstInteraction = () => {
+        audio.play().catch(() => {});
+      };
+      ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, startOnFirstInteraction, { once:true, passive:true });
+      });
     });
-
-    requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
 })();
 </script>
 
