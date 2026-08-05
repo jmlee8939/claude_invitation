@@ -334,6 +334,49 @@
     text-decoration:underline;
     text-underline-offset:4px;
   }
+  .gallery-grid .photo-slot.has-photo{ cursor:zoom-in; }
+
+  /* ---- 갤러리 크게 보기 (라이트박스) ---- */
+  #lightbox{
+    position:fixed; inset:0; z-index:2000;
+    background:rgba(10,14,18,.92);
+    display:none;
+    align-items:center;
+    justify-content:center;
+  }
+  #lightbox.show{ display:flex; }
+  #lightbox img{
+    max-width:90vw;
+    max-height:82vh;
+    object-fit:contain;
+    box-shadow:0 12px 40px rgba(0,0,0,.5);
+  }
+  #lightbox button{
+    position:absolute;
+    appearance:none; border:none; cursor:pointer;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #lightbox .lightbox-close{
+    top:18px; right:18px;
+    width:40px; height:40px;
+    font-size:20px;
+  }
+  #lightbox .lightbox-prev, #lightbox .lightbox-next{
+    top:50%; transform:translateY(-50%);
+    width:48px; height:48px;
+    font-size:26px;
+  }
+  #lightbox .lightbox-prev{ left:12px; }
+  #lightbox .lightbox-next{ right:12px; }
+  #lightbox button:hover{ background:rgba(255,255,255,.22); }
+  #lightbox .lightbox-count{
+    position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,.7); font-size:13px; letter-spacing:.04em;
+  }
+  @media print{ #lightbox{ display:none !important; } }
 
   /* ================= 5. 오시는 길 ================= */
   .venue-name{ text-align:center; font-size:20px; }
@@ -860,6 +903,15 @@
       <div class="photo-slot" data-photo-key="gallery-7"><span class="slot-label">사진 7</span></div>
       <div class="photo-slot" data-photo-key="gallery-8"><span class="slot-label">사진 8</span></div>
       <div class="photo-slot" data-photo-key="gallery-9"><span class="slot-label">사진 9</span></div>
+      <div class="photo-slot" data-photo-key="gallery-10"><span class="slot-label">사진 10</span></div>
+      <div class="photo-slot" data-photo-key="gallery-11"><span class="slot-label">사진 11</span></div>
+      <div class="photo-slot" data-photo-key="gallery-12"><span class="slot-label">사진 12</span></div>
+      <div class="photo-slot" data-photo-key="gallery-13"><span class="slot-label">사진 13</span></div>
+      <div class="photo-slot" data-photo-key="gallery-14"><span class="slot-label">사진 14</span></div>
+      <div class="photo-slot" data-photo-key="gallery-15"><span class="slot-label">사진 15</span></div>
+      <div class="photo-slot" data-photo-key="gallery-16"><span class="slot-label">사진 16</span></div>
+      <div class="photo-slot" data-photo-key="gallery-17"><span class="slot-label">사진 17</span></div>
+      <div class="photo-slot" data-photo-key="gallery-18"><span class="slot-label">사진 18</span></div>
     </div>
   </section>
 
@@ -1176,6 +1228,75 @@
 <input type="file" id="hidden-audio-input" accept="audio/*" style="display:none">
 <button type="button" id="bgm-toggle" title="배경음악">♪</button>
 <button type="button" id="bgm-remove" title="배경음악 삭제">×</button>
+
+<!-- 갤러리 크게 보기 -->
+<div id="lightbox">
+  <button type="button" class="lightbox-close" aria-label="닫기">×</button>
+  <button type="button" class="lightbox-prev" aria-label="이전 사진">‹</button>
+  <img src="" alt="">
+  <button type="button" class="lightbox-next" aria-label="다음 사진">›</button>
+  <div class="lightbox-count"></div>
+</div>
+<script id="lightbox-script">
+(function(){
+  const box = document.getElementById('lightbox');
+  const imgEl = box.querySelector('img');
+  const countEl = box.querySelector('.lightbox-count');
+  let items = [];
+  let idx = 0;
+
+  function bgUrl(slot){
+    const m = /url\((?:"|')?(.*?)(?:"|')?\)/.exec(slot.style.backgroundImage || '');
+    return m ? m[1] : null;
+  }
+
+  function refreshItems(){
+    items = Array.from(document.querySelectorAll('.gallery-grid .photo-slot.has-photo'));
+  }
+
+  function open(slot){
+    refreshItems();
+    idx = items.indexOf(slot);
+    if (idx === -1) return;
+    show();
+  }
+
+  function show(){
+    const url = bgUrl(items[idx]);
+    if (!url) return;
+    imgEl.src = url;
+    countEl.textContent = `${idx + 1} / ${items.length}`;
+    box.classList.add('show');
+  }
+
+  function close(){
+    box.classList.remove('show');
+    imgEl.src = '';
+  }
+
+  function next(){ idx = (idx + 1) % items.length; show(); }
+  function prev(){ idx = (idx - 1 + items.length) % items.length; show(); }
+
+  document.querySelectorAll('.gallery-grid .photo-slot').forEach(slot => {
+    slot.addEventListener('click', () => {
+      if (document.body.classList.contains('edit-mode')) return;
+      if (!slot.classList.contains('has-photo')) return;
+      open(slot);
+    });
+  });
+
+  box.querySelector('.lightbox-close').addEventListener('click', close);
+  box.querySelector('.lightbox-next').addEventListener('click', next);
+  box.querySelector('.lightbox-prev').addEventListener('click', prev);
+  box.addEventListener('click', (e) => { if (e.target === box) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (!box.classList.contains('show')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+})();
+</script>
 
 <!-- 배경음악 재생/일시정지 (완성본에도 남는 독립 스크립트) -->
 <script id="bgm-toggle-script">
