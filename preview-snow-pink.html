@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>핑크 그라데이션 눈 비교</title>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:#333; padding:24px; font-family:sans-serif; }
+  .row{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+  .card{ width:320px; border-radius:8px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+  .label{ background:#111; color:#fff; font-size:12px; text-align:center; padding:8px; }
+  .stage{
+    position:relative;
+    height:420px;
+    overflow:hidden;
+    background:#EEF5FA;
+  }
+  .snow-layer{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .snow-layer .snow{ position:absolute; top:0; border-radius:50%; }
+
+  /* A: 지금(순백색) */
+  .white .snow{
+    background:#fff;
+    box-shadow:0 0 3px rgba(58,51,36,.25);
+  }
+
+  /* B: 은은한 핑크 그라데이션 (중심 흰색 -> 가장자리 핑크) */
+  .pink-soft .snow{
+    background:radial-gradient(circle at 35% 30%, #ffffff 0%, #ffe3ec 55%, #ffc2d8 100%);
+    box-shadow:0 0 4px rgba(214,120,150,.35);
+  }
+
+  /* C: 좀 더 또렷한 핑크 그라데이션 (핑크 -> 로즈) */
+  .pink-strong .snow{
+    background:radial-gradient(circle at 35% 30%, #ffd7e4 0%, #ff9dbf 60%, #f472a0 100%);
+    box-shadow:0 0 5px rgba(244,114,160,.45);
+  }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="card">
+      <div class="label">A. 지금 (순백)</div>
+      <div class="stage"><div class="snow-layer white" id="l1"></div></div>
+    </div>
+    <div class="card">
+      <div class="label">B. 은은한 핑크 그라데이션</div>
+      <div class="stage"><div class="snow-layer pink-soft" id="l2"></div></div>
+    </div>
+    <div class="card">
+      <div class="label">C. 또렷한 핑크 그라데이션</div>
+      <div class="stage"><div class="snow-layer pink-strong" id="l3"></div></div>
+    </div>
+  </div>
+
+<script>
+function runSnow(layerId){
+  const layer = document.getElementById(layerId);
+  const count = 22;
+  const flakes = [];
+
+  for (let i = 0; i < count; i++){
+    const el = document.createElement('div');
+    el.className = 'snow';
+    const size = 6 + Math.random() * 8;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.opacity = 0.55 + Math.random() * 0.4;
+    layer.appendChild(el);
+    flakes.push({
+      el,
+      x: Math.random() * 100,
+      y: -(20 + Math.random() * layer.clientHeight),
+      speed: 24 + Math.random() * 24,
+      drift: (Math.random() - 0.5) * 12
+    });
+  }
+
+  let lastT = null;
+  function tick(t){
+    if (lastT === null) lastT = t;
+    const dt = Math.min((t - lastT) / 1000, 0.05);
+    lastT = t;
+    const h = layer.clientHeight;
+    const w = layer.clientWidth;
+    flakes.forEach(f => {
+      f.y += f.speed * dt;
+      f.x += (f.drift * dt / w) * 100;
+      if (f.x < -5) f.x = 105;
+      if (f.x > 105) f.x = -5;
+      if (f.y > h + 40){
+        f.y = -(20 + Math.random() * 60);
+        f.x = Math.random() * 100;
+      }
+      f.el.style.transform = `translate(${f.x}vw, ${f.y}px)`;
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+runSnow('l1');
+runSnow('l2');
+runSnow('l3');
+</script>
+</body>
+</html>
