@@ -119,6 +119,13 @@
     object-fit:contain;
     filter:drop-shadow(0 2px 4px rgba(0,0,0,.18));
   }
+  /* 신랑/신부 검도 스티커 전용 앵커 : 표지-초대글 사이 구분선에 고정.
+     아래쪽 아코디언이 펼쳐져 전체 페이지 높이가 바뀌어도 위치가 함께 밀리지 않도록
+     전체 페이지 기준 %가 아닌, 이 구분선 자체를 기준으로 고정 배치합니다. */
+  .hero-sticker-anchor{ position:relative; z-index:40; }
+  .hero-sticker-anchor .sticker.fixed-sticker{
+    bottom:6px;
+  }
 
   .eyebrow{
     font-family:var(--font-en);
@@ -351,7 +358,11 @@
     max-height:82vh;
     object-fit:contain;
     box-shadow:0 12px 40px rgba(0,0,0,.5);
+    touch-action:none;
+    will-change:transform;
   }
+  #lightbox img.zoomed{ cursor:grab; }
+  #lightbox img.panning{ cursor:grabbing; }
   #lightbox button{
     position:absolute;
     appearance:none; border:none; cursor:pointer;
@@ -816,11 +827,17 @@
     <div class="venue-line editable" data-key="venue-name">예식장 이름 00층 00홀</div>
   </section>
 
-  <div class="branch-divider">
+  <div class="branch-divider hero-sticker-anchor">
     <img class="divider-sticker" src="stickers/kendo-mask.png" alt="검도 호구">
     <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
       <path d="M2 12 H118" stroke="#4C6478" stroke-width="1"/>
     </svg>
+    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-boy" data-label="검도 (신랑)" style="left:17.125%; width:13.5417%; transform:rotate(0deg);">
+      <img src="stickers/kendo-boy.png" alt="검도 (신랑)">
+    </div>
+    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-girl" data-label="검도 (신부)" style="left:68.3333%; width:15.625%; transform:rotate(1deg);">
+      <img src="stickers/kendo-girl.png" alt="검도 (신부)">
+    </div>
   </div>
 
   <!-- ================= 2. 초대의 말씀 ================= -->
@@ -1164,7 +1181,7 @@
     <h2 class="section-title">마음 전하는 곳</h2>
     <div class="accordion">
       <details class="accordion-item">
-        <summary>신랑측 계좌번호 보기</summary>
+        <summary>신랑측</summary>
         <div class="content account-block">
           <!-- 필요한 만큼 account-row 블록을 복사해서 추가하면 됩니다 -->
           <div class="account-row">
@@ -1177,7 +1194,7 @@
         </div>
       </details>
       <details class="accordion-item">
-        <summary>신부측 계좌번호 보기</summary>
+        <summary>신부측</summary>
         <div class="content account-block">
           <div class="account-row">
             <div>
@@ -1198,14 +1215,6 @@
   </footer>
 
   <div class="sticker-layer" id="sticker-layer">
-    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-boy" data-label="검도 (신랑)" style="left:17.125%; top:13.7628%; width:13.5417%; transform:rotate(0deg);">
-      <img src="stickers/kendo-boy.png" alt="검도 (신랑)">
-      <div class="sticker-label">검도 (신랑)</div>
-    </div>
-    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-girl" data-label="검도 (신부)" style="left:68.3333%; top:13.8035%; width:15.625%; transform:rotate(1deg);">
-      <img src="stickers/kendo-girl.png" alt="검도 (신부)">
-      <div class="sticker-label">검도 (신부)</div>
-    </div>
   </div>
 
 </div>
@@ -1242,6 +1251,86 @@
   let idx = 0;
   let currentGroupSelector = null;
 
+  /* ---- 핀치 확대/이동 상태 ---- */
+  const MAX_SCALE = 4;
+  let scale = 1, tx = 0, ty = 0;
+  let pinchStartDist = 0, pinchStartScale = 1;
+  let isPanning = false, panStartX = 0, panStartY = 0, panStartTx = 0, panStartTy = 0;
+  let lastTapTime = 0;
+
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  function applyZoomTransform(){
+    imgEl.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    imgEl.classList.toggle('zoomed', scale > 1);
+  }
+
+  function resetZoom(){
+    scale = 1; tx = 0; ty = 0;
+    applyZoomTransform();
+  }
+
+  function touchDistance(t1, t2){
+    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+  }
+
+  imgEl.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2){
+      pinchStartDist = touchDistance(e.touches[0], e.touches[1]);
+      pinchStartScale = scale;
+      isPanning = false;
+    } else if (e.touches.length === 1){
+      const now = Date.now();
+      if (now - lastTapTime < 300){
+        if (scale > 1){ resetZoom(); }
+        else { scale = 2.5; applyZoomTransform(); }
+        lastTapTime = 0;
+        return;
+      }
+      lastTapTime = now;
+      if (scale > 1){
+        isPanning = true;
+        panStartX = e.touches[0].clientX;
+        panStartY = e.touches[0].clientY;
+        panStartTx = tx;
+        panStartTy = ty;
+      }
+    }
+  }, { passive:true });
+
+  imgEl.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2){
+      e.preventDefault();
+      const dist = touchDistance(e.touches[0], e.touches[1]);
+      scale = clamp(pinchStartScale * (dist / pinchStartDist), 1, MAX_SCALE);
+      applyZoomTransform();
+    } else if (e.touches.length === 1 && isPanning){
+      e.preventDefault();
+      tx = panStartTx + (e.touches[0].clientX - panStartX);
+      ty = panStartTy + (e.touches[0].clientY - panStartY);
+      imgEl.classList.add('panning');
+      applyZoomTransform();
+    }
+  }, { passive:false });
+
+  imgEl.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0){
+      isPanning = false;
+      imgEl.classList.remove('panning');
+      if (scale <= 1) resetZoom();
+    }
+  });
+
+  imgEl.addEventListener('dblclick', () => {
+    if (scale > 1){ resetZoom(); } else { scale = 2.5; applyZoomTransform(); }
+  });
+
+  imgEl.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    scale = clamp(scale - e.deltaY * 0.002, 1, MAX_SCALE);
+    if (scale <= 1) resetZoom(); else applyZoomTransform();
+  }, { passive:false });
+
   function bgUrl(slot){
     const m = /url\((?:"|')?(.*?)(?:"|')?\)/.exec(slot.style.backgroundImage || '');
     return m ? m[1] : null;
@@ -1262,6 +1351,7 @@
   function show(){
     const url = bgUrl(items[idx]);
     if (!url) return;
+    resetZoom();
     imgEl.src = url;
     countEl.textContent = `${idx + 1} / ${items.length}`;
     box.classList.add('show');
@@ -1270,6 +1360,7 @@
   function close(){
     box.classList.remove('show');
     imgEl.src = '';
+    resetZoom();
   }
 
   function next(){ idx = (idx + 1) % items.length; show(); }
