@@ -334,7 +334,8 @@
     text-decoration:underline;
     text-underline-offset:4px;
   }
-  .gallery-grid .photo-slot.has-photo{ cursor:zoom-in; }
+  .gallery-grid .photo-slot.has-photo,
+  .timeline .photo-slot.has-photo{ cursor:zoom-in; }
 
   /* ---- 갤러리 크게 보기 (라이트박스) ---- */
   #lightbox{
@@ -676,8 +677,8 @@
   }
   .sticker img{
     display:block; width:100%; height:auto; pointer-events:none;
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.18));
   }
+  .sticker.fixed-sticker{ cursor:default; pointer-events:none; }
   .sticker .sticker-placeholder{
     width:100%; aspect-ratio:1/1;
     border:1px dashed var(--line); border-radius:8px;
@@ -912,6 +913,9 @@
       <div class="photo-slot" data-photo-key="gallery-16"><span class="slot-label">사진 16</span></div>
       <div class="photo-slot" data-photo-key="gallery-17"><span class="slot-label">사진 17</span></div>
       <div class="photo-slot" data-photo-key="gallery-18"><span class="slot-label">사진 18</span></div>
+      <div class="photo-slot" data-photo-key="gallery-19"><span class="slot-label">사진 19</span></div>
+      <div class="photo-slot" data-photo-key="gallery-20"><span class="slot-label">사진 20</span></div>
+      <div class="photo-slot" data-photo-key="gallery-21"><span class="slot-label">사진 21</span></div>
     </div>
   </section>
 
@@ -1194,20 +1198,12 @@
   </footer>
 
   <div class="sticker-layer" id="sticker-layer">
-    <div class="sticker has-image" data-sticker-key="kendo-boy" data-label="검도 (신랑)" style="left:34%; top:3%; width:10%; transform:rotate(0deg);">
+    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-boy" data-label="검도 (신랑)" style="left:17.125%; top:13.7628%; width:13.5417%; transform:rotate(0deg);">
       <img src="stickers/kendo-boy.png" alt="검도 (신랑)">
-      <div class="sticker-frame"></div>
-      <div class="sticker-handle sticker-rotate"></div>
-      <div class="sticker-handle sticker-resize"></div>
-      <button type="button" class="sticker-handle sticker-remove">×</button>
       <div class="sticker-label">검도 (신랑)</div>
     </div>
-    <div class="sticker has-image" data-sticker-key="kendo-girl" data-label="검도 (신부)" style="left:50%; top:3%; width:10%; transform:rotate(4deg);">
+    <div class="sticker has-image fixed-sticker" data-sticker-key="kendo-girl" data-label="검도 (신부)" style="left:68.3333%; top:13.8035%; width:15.625%; transform:rotate(1deg);">
       <img src="stickers/kendo-girl.png" alt="검도 (신부)">
-      <div class="sticker-frame"></div>
-      <div class="sticker-handle sticker-rotate"></div>
-      <div class="sticker-handle sticker-resize"></div>
-      <button type="button" class="sticker-handle sticker-remove">×</button>
       <div class="sticker-label">검도 (신부)</div>
     </div>
   </div>
@@ -1244,18 +1240,20 @@
   const countEl = box.querySelector('.lightbox-count');
   let items = [];
   let idx = 0;
+  let currentGroupSelector = null;
 
   function bgUrl(slot){
     const m = /url\((?:"|')?(.*?)(?:"|')?\)/.exec(slot.style.backgroundImage || '');
     return m ? m[1] : null;
   }
 
-  function refreshItems(){
-    items = Array.from(document.querySelectorAll('.gallery-grid .photo-slot.has-photo'));
+  function refreshItems(groupSelector){
+    currentGroupSelector = groupSelector;
+    items = Array.from(document.querySelectorAll(groupSelector + ' .photo-slot.has-photo'));
   }
 
-  function open(slot){
-    refreshItems();
+  function open(slot, groupSelector){
+    refreshItems(groupSelector);
     idx = items.indexOf(slot);
     if (idx === -1) return;
     show();
@@ -1277,13 +1275,18 @@
   function next(){ idx = (idx + 1) % items.length; show(); }
   function prev(){ idx = (idx - 1 + items.length) % items.length; show(); }
 
-  document.querySelectorAll('.gallery-grid .photo-slot').forEach(slot => {
-    slot.addEventListener('click', () => {
-      if (document.body.classList.contains('edit-mode')) return;
-      if (!slot.classList.contains('has-photo')) return;
-      open(slot);
+  function wireGroup(groupSelector){
+    document.querySelectorAll(groupSelector + ' .photo-slot').forEach(slot => {
+      slot.addEventListener('click', () => {
+        if (document.body.classList.contains('edit-mode')) return;
+        if (!slot.classList.contains('has-photo')) return;
+        open(slot, groupSelector);
+      });
     });
-  });
+  }
+
+  wireGroup('.gallery-grid');
+  wireGroup('.timeline');
 
   box.querySelector('.lightbox-close').addEventListener('click', close);
   box.querySelector('.lightbox-next').addEventListener('click', next);
@@ -1923,7 +1926,7 @@ function copyAccount(btn){
   wireLinkEditing();
   wireBgmUpload();
   document.querySelectorAll('[data-photo-key]').forEach(wirePhotoSlot);
-  document.querySelectorAll('.sticker').forEach(wireSticker);
+  document.querySelectorAll('.sticker:not(.fixed-sticker)').forEach(wireSticker);
   setEditMode(state.editMode);
 })();
 </script>
