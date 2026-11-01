@@ -889,8 +889,8 @@
   <section id="calendar">
     <div class="eyebrow">Wedding Day</div>
     <div class="calendar">
-      <div class="cal-sub editable" data-key="cal-yearmonth">2027년 1월</div>
-      <div class="cal-date editable" data-key="cal-day">10</div>
+      <div class="cal-sub editable" data-key="cal-yearmonth">2027년</div>
+      <div class="cal-date editable" data-key="cal-day">1/10</div>
       <div class="cal-sub editable" data-key="cal-time">SUNDAY · 낮 12시 30분</div>
 
       <div class="cal-grid">
@@ -1548,10 +1548,14 @@
   if (!ymEl || !dayEl || !countdownEl) return;
 
   function update(){
-    const ym = ymEl.textContent.match(/(\d+)\s*년\s*(\d+)\s*월/);
-    const day = parseInt(dayEl.textContent, 10);
-    if (!ym || isNaN(day)) return;
-    const wedding = new Date(parseInt(ym[1], 10), parseInt(ym[2], 10) - 1, day);
+    // "2027년" + "1/10" 형식, 또는 예전 "2027년 1월" + "10" 형식 모두 지원
+    const year = ymEl.textContent.match(/(\d{4})/);
+    const md = dayEl.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+    const oldMonth = ymEl.textContent.match(/(\d+)\s*월/);
+    const month = md ? parseInt(md[1], 10) : oldMonth ? parseInt(oldMonth[1], 10) : NaN;
+    const day = md ? parseInt(md[2], 10) : parseInt(dayEl.textContent, 10);
+    if (!year || isNaN(month) || isNaN(day)) return;
+    const wedding = new Date(parseInt(year[1], 10), month - 1, day);
     const today = new Date();
     wedding.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
