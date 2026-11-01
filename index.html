@@ -890,7 +890,7 @@
     <div class="eyebrow">Wedding Day</div>
     <div class="calendar">
       <div class="cal-sub editable" data-key="cal-yearmonth">2027년</div>
-      <div class="cal-date editable" data-key="cal-day">1/10</div>
+      <div class="cal-date editable" data-key="cal-day">1월 10일</div>
       <div class="cal-sub editable" data-key="cal-time">SUNDAY · 낮 12시 30분</div>
 
       <div class="cal-grid">
@@ -1548,9 +1548,9 @@
   if (!ymEl || !dayEl || !countdownEl) return;
 
   function update(){
-    // "2027년" + "1/10" 형식, 또는 예전 "2027년 1월" + "10" 형식 모두 지원
+    // "2027년" + "1월 10일"(또는 "1/10") 형식, 또는 예전 "2027년 1월" + "10" 형식 모두 지원
     const year = ymEl.textContent.match(/(\d{4})/);
-    const md = dayEl.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+    const md = dayEl.textContent.match(/(\d+)\s*(?:\/|월)\s*(\d+)/);
     const oldMonth = ymEl.textContent.match(/(\d+)\s*월/);
     const month = md ? parseInt(md[1], 10) : oldMonth ? parseInt(oldMonth[1], 10) : NaN;
     const day = md ? parseInt(md[2], 10) : parseInt(dayEl.textContent, 10);
